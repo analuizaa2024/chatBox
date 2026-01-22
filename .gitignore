@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Banco de dados
+db/
+*.db
+
+# Variáveis de ambiente
+.env
+config.py
+
+# Node / React
+node_modules/
+dist/
