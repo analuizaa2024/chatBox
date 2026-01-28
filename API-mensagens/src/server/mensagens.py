@@ -7,9 +7,10 @@ from flask_cors import CORS
 from datetime import datetime
 from src.app.config import get_embedding_function
 from src.app.models.rag_model import RAGModel
+from flask_restx import abort
 
 
-DOC_DIR = "documents"
+DOC_DIR = "data"
 DB_DIR = "db"
 
 # Ativar CORS
@@ -21,11 +22,6 @@ api = server.api
 
 # MODELOS DO SWAGGER
 
-# modelos de entrada
-ask_input = ns.model("AskInput", {
-    "user": fields.String(required=True),
-    "msg": fields.String(required=True)
-})
 
 # Modelo padrão para mensagens
 mensagem_model = ns.model('Mensagem', {
@@ -34,6 +30,17 @@ mensagem_model = ns.model('Mensagem', {
     'to': fields.String(required=True, description='Destinatário (pode ser o bot)'),
     'id': fields.String(description='ID da mensagem no banco'),
     'createdAt': fields.String(description='Data de criação da mensagem')
+})
+
+# modelos de entrada
+ask_input = ns.model("AskInput", {
+    "user": fields.String(required=True),
+    "msg": fields.String(required=True)
+})
+
+ask_response =ns.model("AskInput", {
+    "user": fields.String(required=True),
+    "msg": fields.String(required=True)
 })
 
 # Modelo para erros no Swagger
@@ -158,7 +165,7 @@ class Mensagem(Resource):
 @ns.route('/ask')
 class RAGAsk(Resource):
     @api.expect(ask_input)
-    @api.response(201, "Resposta do bot")
+    @api.marshal_with(ask_response, code=201,)
     def post(self):
         data = request.json
         user = data.get('user')
@@ -200,4 +207,4 @@ class RAGAsk(Resource):
             }, 201
 
         except Exception as e:
-            return error_response(500, f"Erro ao processar pergunta: {str(e)}")
+            abort(500, f"Erro ao processar pergunta: {str(e)}")

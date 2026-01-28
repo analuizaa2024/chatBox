@@ -1,7 +1,7 @@
 from langchain_community.vectorstores import Chroma
 from langchain_ollama import ChatOllama
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
 
 class RAGModel:
@@ -14,9 +14,9 @@ class RAGModel:
 
         # Modelo de linguagem (Ollama)
         self.llm = ChatOllama(
-            model="qwen2:1.5b",
-            temperature=0.1,
-            num_ctx=1024
+            model="phi3:mini",
+            temperature=0.0,
+            num_ctx=2048
         )
 
         self.max_context_chars = max_context_chars
@@ -53,13 +53,16 @@ class RAGModel:
 
         # 4 Prompt
         template = """
-Você é um professor de língua portuguesa.
-Use EXCLUSIVAMENTE as informações presentes no TEXTO.
-Não use conhecimento externo.
-Não complete lacunas.
-Não faça suposições.
+Você é um assistente extremamente rigoroso.
 
-Se a resposta NÃO estiver claramente no texto, responda exatamente:
+REGRAS OBRIGATÓRIAS:
+- Responda SOMENTE copiando ou parafraseando trechos do TEXTO.
+- NÃO use conhecimento externo.
+- NÃO interprete.
+- NÃO explique além do que está escrito.
+- NÃO invente exemplos.
+- Responda SOMENTE em português
+- Se não houver uma frase no texto que responda exatamente a pergunta, responda APENAS:
 "Essa informação não está nos documentos."
 
 TEXTO:
