@@ -24,7 +24,7 @@ function App() {
   useEffect(() => {
     if (!nome) return;
 
-    fetch(`http://localhost:5000/mensagens/allMesages`)
+    fetch(`https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/chat`)
       .then((res) => res.json())
       .then((data) => {
         const msgsDoUsuario = data.filter(
@@ -55,7 +55,7 @@ function App() {
 
     try {
       // Salva no backend
-      await fetch("http://localhost:5000/mensagens/allMesages", {
+      await fetch("https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(novaMensagem),
@@ -76,7 +76,7 @@ function App() {
           setMensagens((prev) => [...prev, botMsg]);
 
           // Salva no backend
-          await fetch("http://localhost:5000/mensagens/allMesages", {
+          await fetch("https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(botMsg),

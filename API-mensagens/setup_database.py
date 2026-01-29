@@ -8,13 +8,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
+from langchain.schema import Document
 
-from src.app.config import get_embedding_function
+from src.app.config import get_embedding_function, EMBEDDING_MODEL
 
 
 
-DOC_DIR = "data"
+DOC_DIR = "documents"
 DB_DIR = "db"
 # if os.path.exists(DB_DIR):
 # shutil.rmtree(DB_DIR)
@@ -23,7 +23,7 @@ DB_DIR = "db"
 # ---------------- CARREGAMENTO DOS DOCUMENTOS ----------------
 
 
-data = []
+documents = []
 
 
 for file_name in os.listdir(DOC_DIR):
@@ -32,12 +32,12 @@ for file_name in os.listdir(DOC_DIR):
 
     if file_name.endswith(".pdf"):
         loader = PyPDFLoader(file_path)
-        data.extend(loader.load())
+        documents.extend(loader.load())
 
 
     elif file_name.endswith(".txt"):
         loader = TextLoader(file_path, encoding="utf-8")
-        data.extend(loader.load())
+        documents.extend(loader.load())
 
 
     elif file_name.endswith(".csv"):
@@ -46,7 +46,7 @@ for file_name in os.listdir(DOC_DIR):
         for row in reader:
             text = row.get("Problema", "")
             metadata = {"URL": row.get("URL", "")}
-            data.append(Document(page_content=text, metadata=metadata))
+            documents.append(Document(page_content=text, metadata=metadata))
 
 
     else:
@@ -62,17 +62,17 @@ text_splitter = RecursiveCharacterTextSplitter(
 )
 
 
-docs = text_splitter.split_documents(data)
+docs = text_splitter.split_documents(documents)
 
 
-print(f"Total de documentos carregados: {len(data)}")
+print(f"Total de documentos carregados: {len(documents)}")
 print(f"Total de chunks criados: {len(docs)}")
 
 
 # ---------------- EMBEDDINGS ----------------
 
 
-print(f"Criando embeddings com a função configurada...")
+print(f"Criando embeddings com o modelo '{EMBEDDING_MODEL}'...")
 embedding_function = get_embedding_function()
 
 

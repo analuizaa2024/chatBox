@@ -17,7 +17,7 @@ class Server:
         self.api.add_namespace(self.ns_mensagens)  # Adiciona o namespace mensagens à API principal.
     
     def run (self):
-        self.app.run(host="0.0.0", port=500, debug=True)
+        self.app.run(debug=True)
 
     
 server = Server()
