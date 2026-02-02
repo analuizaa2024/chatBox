@@ -13,7 +13,7 @@ DOC_DIR = "documents"
 DB_DIR = "db"
 
 # Ativar CORS
-CORS(server.app)
+CORS(server.app, resources={r"/*": {"origins": "*"}})
 
 # Acessar namespace e api criados no instance.py
 ns = server.ns_mensagens

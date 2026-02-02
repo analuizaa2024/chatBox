@@ -24,7 +24,7 @@ function App() {
   useEffect(() => {
     if (!nome) return;
 
-    fetch(`https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/chat`)
+    fetch(`https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/allMessages`)
       .then((res) => res.json())
       .then((data) => {
         const msgsDoUsuario = data.filter(
@@ -44,51 +44,38 @@ function App() {
 
   // ENVIA MENSAGEM
   async function onclickbutton(textoDigitado) {
-    const novaMensagem = {
-      user: nome,
-      msg: textoDigitado,
-      to: "atendente",
-    };
+  const payload = {
+    user: nome,
+    msg: textoDigitado
+  };
 
-    // Adiciona no frontend imediatamente
-    setMensagens((prev) => [...prev, novaMensagem]);
+  // 1. Adiciona a mensagem do usuário na tela imediatamente (otimismo)
+  const msgUserLocal = { user: nome, msg: textoDigitado, to: "atendente" };
+  setMensagens((prev) => [...prev, msgUserLocal]);
+  setTyping(true);
 
-    try {
-      // Salva no backend
-      await fetch("https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(novaMensagem),
-      });
+  try {
+    // 2. Chama a rota CORRETA do seu backend Python (/ask)
+    const response = await fetch("https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/mensagens/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-      // BOT só responde na primeira mensagem
-      if (mensagens.length === 0) {
-        setTyping(true);
+    const data = await response.json();
 
-        setTimeout(async () => {
-          const botMsg = {
-            user: "atendente",
-            msg: `Oi ${nome}, como posso te ajudar?`,
-            to: nome,
-          };
-
-          // Adiciona no frontend
-          setMensagens((prev) => [...prev, botMsg]);
-
-          // Salva no backend
-          await fetch("https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(botMsg),
-          });
-
-          setTyping(false);
-        }, 1000);
-      }
-    } catch (err) {
-      console.error("Erro ao enviar mensagem:", err);
+    // 3. O seu backend retorna { userMessage: ..., botMessage: ... }
+    // Vamos adicionar a resposta real do BOT que veio da IA
+    if (data.botMessage) {
+      setMensagens((prev) => [...prev, data.botMessage]);
     }
+
+  } catch (err) {
+    console.error("Erro ao conversar com o bot:", err);
+  } finally {
+    setTyping(false);
   }
+}
 
   return (
     <div
