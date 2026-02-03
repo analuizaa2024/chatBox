@@ -24,7 +24,7 @@ function App() {
   useEffect(() => {
     if (!nome) return;
 
-    fetch(`https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/allMessages`)
+    fetch(`https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/mensagens/allMessages`)
       .then((res) => res.json())
       .then((data) => {
         const msgsDoUsuario = data.filter(
