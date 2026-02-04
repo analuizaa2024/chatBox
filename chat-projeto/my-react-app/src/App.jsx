@@ -43,31 +43,32 @@ function App() {
   }, [mensagens]);
 
   // ENVIA MENSAGEM
-  async function onclickbutton(textoDigitado) {
+ async function onclickbutton(textoDigitado) {
   const payload = {
     user: nome,
     msg: textoDigitado
   };
 
-  // 1. Adiciona a mensagem do usuário na tela imediatamente (otimismo)
-  const msgUserLocal = { user: nome, msg: textoDigitado, to: "atendente" };
-  setMensagens((prev) => [...prev, msgUserLocal]);
   setTyping(true);
 
   try {
-    // 2. Chama a rota CORRETA do seu backend Python (/ask)
-    const response = await fetch("https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/mensagens/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      "https://miniature-acorn-7vj9q469wgpfxx6v-5174.app.github.dev/mensagens/ask",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }
+    );
 
     const data = await response.json();
 
-    // 3. O seu backend retorna { userMessage: ..., botMessage: ... }
-    // Vamos adicionar a resposta real do BOT que veio da IA
-    if (data.botMessage) {
-      setMensagens((prev) => [...prev, data.botMessage]);
+    if (data.userMessage && data.botMessage) {
+      setMensagens((prev) => [
+        ...prev,
+        data.userMessage,
+        data.botMessage
+      ]);
     }
 
   } catch (err) {

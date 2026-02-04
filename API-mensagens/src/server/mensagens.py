@@ -1,9 +1,9 @@
+print("🔥 mensagens.py carregado")
 from flask import request
 from flask_restx import reqparse, abort, Resource, fields
 from src.server.instance import server
 from src.server.raw import collection
 from bson import ObjectId
-from flask_cors import CORS
 from datetime import datetime
 from src.app.config import get_embedding_function
 from src.app.models.rag_model import RAGModel
@@ -12,21 +12,13 @@ from src.app.models.rag_model import RAGModel
 DOC_DIR = "documents"
 DB_DIR = "db"
 
-# Ativar CORS
-CORS(server.app, resources={r"/*": {"origins": "*"}})
+
 
 # Acessar namespace e api criados no instance.py
 ns = server.ns_mensagens
 api = server.api
 
-@server.app.after_request
-def add_cors_headers(response):
-    # Isso garante que QUALQUER resposta (mesmo erro ou preflight)
-    # contenha os cabeçalhos que o navegador exige
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-    return response
+
 
 # MODELOS DO SWAGGER
 
@@ -44,6 +36,8 @@ mensagem_model = ns.model('Mensagem', {
     'id': fields.String(description='ID da mensagem no banco'),
     'createdAt': fields.String(description='Data de criação da mensagem')
 })
+
+
 
 # Modelo para erros no Swagger
 error_model = ns.model('Error', {
